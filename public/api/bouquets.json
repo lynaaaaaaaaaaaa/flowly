@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "nom": "Rose d’Amour",
+    "description": "Bouquet romantique avec des roses rouges éclatantes.",
+    "prix": 25,
+    "image": "/images/bouquet1.jpg",
+    "liked": false
+  },
+  {
+    "id": 2,
+    "nom": "Soleil d’Été",
+    "description": "Bouquet lumineux de tournesols et de marguerites.",
+    "prix": 30,
+    "image": "/images/bouquet2.jpg",
+    "liked": false
+  },
+  {
+    "id": 3,
+    "nom": "Pureté Blanche",
+    "description": "Bouquet élégant composé de lys blancs purs.",
+    "prix": 28,
+    "image": "/images/bouquet3.jpg",
+    "liked": false
+  }
+]
