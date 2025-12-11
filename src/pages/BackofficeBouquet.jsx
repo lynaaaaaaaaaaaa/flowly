@@ -68,6 +68,24 @@ export default function BackofficeBouquet() {
     setMessage("Infos du bouquet enregistrées ✅");
   }
 
+  // ⭐ Upload image
+  async function uploadImage(file) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch("http://localhost:5000/api/backoffice/bouquet/upload-image", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      setInfo((prev) => ({ ...prev, image: data.url }));
+      setMessage("Image uploadée avec succès 📸");
+    }
+  }
+
   async function addFlower(e) {
     e.preventDefault();
     setMessage("");
@@ -150,16 +168,24 @@ export default function BackofficeBouquet() {
           />
         </div>
 
+        {/* ⭐ UPLOAD IMAGE */}
         <div>
-          <label className="block font-semibold mb-1">URL de l’image</label>
+          <label className="block font-semibold mb-1">Image du bouquet</label>
+
           <input
-            className="w-full border rounded p-2"
-            value={info.image}
-            onChange={(e) => setInfo({ ...info, image: e.target.value })}
+            type="file"
+            accept="image/*"
+            className="w-full"
+            onChange={(e) => uploadImage(e.target.files[0])}
           />
-          <p className="text-xs text-gray-500">
-            Exemple : http://localhost:5000/images/bouquet1.jpg
-          </p>
+
+          {info.image && (
+            <img
+              src={info.image}
+              className="w-32 h-32 object-cover rounded mt-2 border"
+              alt="aperçu"
+            />
+          )}
         </div>
 
         <div>
