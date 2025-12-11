@@ -39,7 +39,6 @@ export default function BackofficeBouquet() {
             prix: current.data.prix || 0,
           });
         } else {
-          // démarrer un nouveau bouquet si rien en cours
           const started = await myFetch("/api/backoffice/bouquet/start", {
             method: "POST",
             body: JSON.stringify({}),
@@ -68,8 +67,10 @@ export default function BackofficeBouquet() {
     setMessage("Infos du bouquet enregistrées ✅");
   }
 
-  // ⭐ Upload image
+  // ⭐ Upload image corrigé
   async function uploadImage(file) {
+    if (!file) return;
+
     const formData = new FormData();
     formData.append("image", file);
 
@@ -80,9 +81,12 @@ export default function BackofficeBouquet() {
     });
 
     const data = await res.json();
-    if (data.success) {
+
+    if (data.url) {
       setInfo((prev) => ({ ...prev, image: data.url }));
       setMessage("Image uploadée avec succès 📸");
+    } else {
+      setMessage("Erreur upload image ❌");
     }
   }
 
@@ -175,7 +179,6 @@ export default function BackofficeBouquet() {
           <input
             type="file"
             accept="image/*"
-            className="w-full"
             onChange={(e) => uploadImage(e.target.files[0])}
           />
 
@@ -183,7 +186,7 @@ export default function BackofficeBouquet() {
             <img
               src={info.image}
               className="w-32 h-32 object-cover rounded mt-2 border"
-              alt="aperçu"
+              alt="Aperçu"
             />
           )}
         </div>
@@ -212,7 +215,6 @@ export default function BackofficeBouquet() {
           Composition en fleurs 🌺
         </h2>
 
-        {/* Form pour ajouter une fleur */}
         <form onSubmit={addFlower} className="flex flex-wrap gap-4 items-end mb-6">
           <div className="flex-1 min-w-[150px]">
             <label className="block font-semibold mb-1">Fleur</label>
@@ -256,7 +258,6 @@ export default function BackofficeBouquet() {
           </button>
         </form>
 
-        {/* Liste des fleurs déjà ajoutées */}
         {!bouquet || bouquet.fleurs.length === 0 ? (
           <p className="text-gray-500 text-sm">
             Aucune fleur ajoutée pour l’instant.
