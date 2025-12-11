@@ -6,12 +6,15 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // Charger l'utilisateur si un token existe
+  // Vérifier si on est déjà connecté
   useEffect(() => {
     async function checkUser() {
       try {
-        const me = await myFetch("/api/me");
-        if (me?.id) setUser(me);
+        const me = await myFetch("/api/me", {
+          method: "GET",
+          credentials: "include",
+        });
+        setUser(me);
       } catch {
         setUser(null);
       }
@@ -19,19 +22,20 @@ export function AuthProvider({ children }) {
     checkUser();
   }, []);
 
-  // -----------------------------
-  // 🔐 LOGIN
-  // -----------------------------
   async function login(login, password) {
     try {
       const res = await myFetch("/api/login", {
         method: "POST",
+        credentials: "include",
         body: JSON.stringify({ login, password }),
       });
 
       if (!res.success) return false;
 
-      const me = await myFetch("/api/me");
+      const me = await myFetch("/api/me", {
+        method: "GET",
+        credentials: "include",
+      });
       setUser(me);
       return true;
     } catch {
@@ -39,14 +43,12 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // -----------------------------
-  // 📝 REGISTER
-  // -----------------------------
-  async function register(login, password, nom_complet) {
+  async function register(login, password, nom_complet, role) {
     try {
       const res = await myFetch("/api/register", {
         method: "POST",
-        body: JSON.stringify({ login, password, nom_complet }),
+        credentials: "include",
+        body: JSON.stringify({ login, password, nom_complet, role }),
       });
 
       return res.success;
@@ -55,15 +57,14 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // -----------------------------
-  // 🔓 LOGOUT (avec backend + reset user)
-  // -----------------------------
   async function logout() {
     try {
-      await myFetch("/api/logout", { method: "POST" });
-    } catch (e) {
-      console.log("Erreur logout :", e);
-    }
+      await myFetch("/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (e) {}
+    document.cookie = "token=; Max-Age=0; path=/;";
     setUser(null);
   }
 

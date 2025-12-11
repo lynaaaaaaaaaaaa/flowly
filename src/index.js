@@ -4,6 +4,9 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+
 
 // Styles & libs externes
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -15,7 +18,6 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store";
 
 // Auth
-import { AuthProvider } from "./context/AuthContext";
 
 // Initialisation animations
 AOS.init({ duration: 1000, once: true });
@@ -23,10 +25,12 @@ AOS.init({ duration: 1000, once: true });
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

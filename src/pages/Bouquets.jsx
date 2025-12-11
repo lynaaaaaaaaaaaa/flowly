@@ -9,10 +9,9 @@ function BouquetsPage() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Charger bouquets (avec cookies !)
   useEffect(() => {
     fetch("http://localhost:5000/api/bouquets", {
-      credentials: "include", // 🔥 Obligatoire sinon liked=false
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) =>
@@ -26,7 +25,6 @@ function BouquetsPage() {
       .catch((err) => console.error("Erreur chargement bouquets", err));
   }, []);
 
-  // Like sécurisé
   const handleLike = async (id) => {
     if (!user) {
       alert("Tu dois être connectée pour liker 🌸");
@@ -39,18 +37,37 @@ function BouquetsPage() {
       body: JSON.stringify({ id }),
     });
 
-    // Mise à jour du bouquet ciblé
     setBouquets((prev) =>
       prev.map((b) =>
         b.id === id
           ? {
               ...b,
-              liked: true,
+              liked: data.liked,
               likes: data.likes,
             }
           : b
       )
     );
+  };
+
+  const handleDelete = async (id) => {
+    if (!user || user.role !== "employe") {
+      alert("Seul un employé peut supprimer un bouquet.");
+      return;
+    }
+
+    const ok = window.confirm("Supprimer ce bouquet ?");
+    if (!ok) return;
+
+    const res = await myFetch(`/api/bouquets/${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.success) {
+      setBouquets((prev) => prev.filter((b) => b.id !== id));
+    } else {
+      alert("Erreur lors de la suppression.");
+    }
   };
 
   return (
@@ -63,7 +80,11 @@ function BouquetsPage() {
           🌸 Nos Bouquets 🌸
         </h2>
 
-        <Bouquets bouquets={bouquets} onLike={handleLike} />
+        <Bouquets
+          bouquets={bouquets}
+          onLike={handleLike}
+          onDelete={handleDelete}
+        />
       </div>
     </div>
   );
